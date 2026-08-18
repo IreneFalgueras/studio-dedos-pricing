@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Class & Workshop Pricing Calculator — Studio Dedos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sauce+One:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink: #141414;
+    --paper: #ffffff;
+    --sub: #7a766f;
+    --line: #e2ded4;
+    --line-strong: #141414;
+    --panel: #f6f4ef;
+    --font-display: 'Open Sauce One', -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 48px 32px 96px;
+  }
+  header{
+    margin-bottom: 56px;
+  }
+  .eyebrow{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sub);
+    margin-bottom: 18px;
+  }
+  h1{
+    font-size: clamp(34px, 5vw, 58px);
+    line-height: 1.02;
+    font-weight: 600;
+    margin: 0 0 16px;
+    letter-spacing: -0.01em;
+    max-width: 16ch;
+  }
+  header p{
+    color: var(--sub);
+    font-size: 16px;
+    line-height: 1.55;
+    max-width: 46ch;
+    margin: 0;
+  }
+  .layout{
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 56px;
+    align-items: start;
+  }
+  @media (max-width: 880px){
+    .layout{ grid-template-columns: 1fr; }
+  }
+  .group{
+    margin-bottom: 40px;
+  }
+  .group-title{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    border-bottom: 1px solid var(--line-strong);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .group-title span.n{ color: var(--sub); }
+  .field{
+    display: grid;
+    grid-template-columns: 1fr 108px;
+    gap: 16px;
+    align-items: start;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .field:last-child{ border-bottom: none; }
+  .field label{
+    font-size: 14.5px;
+    line-height: 1.4;
+  }
+  .field .caption{
+    display: block;
+    font-size: 12.5px;
+    color: var(--sub);
+    margin-top: 4px;
+    line-height: 1.45;
+  }
+  .field input{
+    font-family: var(--font-mono);
+    font-size: 15px;
+    text-align: right;
+    padding: 8px 10px;
+    border: 1px solid var(--line-strong);
+    background: var(--paper);
+    color: var(--ink);
+    width: 100%;
+    border-radius: 0;
+  }
+  .field input:focus{
+    outline: 2px solid var(--ink);
+    outline-offset: 1px;
+  }
+  .field-prefix{
+    position: relative;
+  }
+
+  /* Results panel */
+  .panel{
+    position: sticky;
+    top: 32px;
+    background: var(--panel);
+    border: 1px solid var(--line-strong);
+    padding: 32px;
+  }
+  .panel h2{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0 0 24px;
+    color: var(--sub);
+  }
+  .ledger-row{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    padding: 7px 0;
+    border-bottom: 1px dotted var(--line);
+  }
+  .ledger-row .label{ color: var(--ink); }
+  .ledger-row .val{ color: var(--ink); font-weight: 500; }
+  .ledger-total{
+    display:flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    padding: 14px 0 0;
+    margin-top: 8px;
+    border-top: 1px solid var(--line-strong);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .hero-block{
+    margin-top: 32px;
+    padding-top: 28px;
+    border-top: 2px solid var(--ink);
+  }
+  .hero-label{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sub);
+    margin-bottom: 6px;
+  }
+  .hero-price{
+    font-size: clamp(44px, 6vw, 64px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .hero-sub{
+    font-size: 13px;
+    color: var(--sub);
+  }
+  .split{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 24px;
+  }
+  .split .hero-block{ margin-top: 0; padding-top: 20px; border-top: 1px solid var(--line-strong); }
+  .split .hero-price{ font-size: clamp(28px, 3.4vw, 36px); }
+  .foot-note{
+    margin-top: 28px;
+    font-size: 12.5px;
+    color: var(--sub);
+    line-height: 1.6;
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+  }
+  .foot-note strong{ color: var(--ink); }
+  .static-note{
+    font-size: 12.5px;
+    color: var(--sub);
+    line-height: 1.6;
+    margin: 14px 0 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  .static-note strong{ color: var(--ink); font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Studio Dedos — Pricing Tool</div>
+    <h1>Class &amp; workshop pricing calculator</h1>
+    <p>One "workshop" = one bookable offering, whether it's a single 3h taster or a 3-session course. Set its shape below and the panel prices the whole thing per student, live.</p>
+  </header>
+
+  <div class="layout">
+    <div class="inputs">
+
+      <div class="group">
+        <div class="group-title">Space charge <span class="n">fixed</span></div>
+        <div class="field">
+          <label for="spaceCharge">Space charge, per workshop (€)
+            <span class="caption">A flat amount you add per workshop — your own honest number, not derived from materials or hours.</span>
+          </label>
+          <input type="number" id="spaceCharge" value="20" step="1" min="0">
+        </div>
+        <p class="static-note">For reference only: your rent works out to about <strong>€10/hour</strong> of studio use (€600 ÷ 60h). A gut check when deciding the amount above, not something it needs to reach.</p>
+      </div>
+
+      <div class="group">
+        <div class="group-title">This workshop <span class="n">shape</span></div>
+        <div class="field">
+          <label for="numSessions">Number of sessions
+            <span class="caption">1 for a one-time workshop, 3 for a 3-class course, 6 for a 6-week course.</span>
+          </label>
+          <input type="number" id="numSessions" value="3" step="1" min="1">
+        </div>
+        <div class="field">
+          <label for="sessionDuration">Length per session (h)
+            <span class="caption">e.g. 3 for a 3h class, or 6 for a one-day session — keep it as 1 session of 6h rather than faking two 3h sessions.</span>
+          </label>
+          <input type="number" id="sessionDuration" value="3" step="0.5" min="0.5">
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Firing <span class="n">per piece</span></div>
+        <div class="field">
+          <label for="rate">Electricity rate (€/kWh)
+            <span class="caption">Amsterdam-area average, Aug 2026 ≈ €0.28. Swap in your actual studio rate when you have it.</span>
+          </label>
+          <input type="number" id="rate" value="0.28" step="0.01" min="0">
+        </div>
+        <div class="field">
+          <label for="bisqueHrs">Bisque — powered hours (h)
+            <span class="caption">Your kiln's rated 3.6kW, so this is ramp+hold time, not the full 1.5-day cycle (most of that is passive cooling).</span>
+          </label>
+          <input type="number" id="bisqueHrs" value="8" step="0.5" min="0">
+        </div>
+        <div class="field">
+          <label for="glazeHrs">Glaze — powered hours (h)
+            <span class="caption">Same idea — your 2-day cycle is mostly cooldown before it's safe to open.</span>
+          </label>
+          <input type="number" id="glazeHrs" value="10" step="0.5" min="0">
+        </div>
+        <p class="static-note">Assumes a <strong>45% element duty cycle</strong> and <strong>18 pieces per full kiln load</strong> — both baked into the firing math below rather than left editable, since they rarely move week to week.</p>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Per student <span class="n">whole workshop</span></div>
+        <div class="field">
+          <label for="materials">Materials cost, total (€)
+            <span class="caption">Total clay + glaze across the whole workshop — not tied to session count, since usage varies by what each class actually does (a trimming-only class uses no new clay).</span>
+          </label>
+          <input type="number" id="materials" value="16" step="0.5" min="0">
+        </div>
+        <div class="field">
+          <label for="pieces">Pieces made, total (pieces)
+            <span class="caption">Fixed regardless of session count — a batch is typically fired once at the end of a course, not once per class.</span>
+          </label>
+          <input type="number" id="pieces" value="2" step="1" min="0">
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="group-title">Profit top-up <span class="n">per hour</span></div>
+        <div class="field">
+          <label for="topup">Top-up, per hour taught (€)
+            <span class="caption">Multiplied by total hours (sessions × length) — a 1-session, 6h day and a 2-session, 3h-each course pay the teacher the same for the same total time.</span>
+          </label>
+          <input type="number" id="topup" value="5" step="1" min="0">
+        </div>
+      </div>
+
+    </div>
+
+    <div class="panel">
+      <h2>Cost breakdown — per student, whole workshop</h2>
+
+      <div class="ledger-row"><span class="label">Materials, total (€)</span><span class="val" id="out-materials">—</span></div>
+      <div class="ledger-row"><span class="label">Firing (€)</span><span class="val" id="out-firing">—</span></div>
+      <div class="ledger-row"><span class="label">Space charge (flat, €)</span><span class="val" id="out-rent">—</span></div>
+      <div class="ledger-total"><span>Cost floor</span><span id="out-floor">—</span></div>
+
+      <div class="hero-block">
+        <div class="hero-label">Price per student <span style="font-weight:400;">— whole workshop</span></div>
+        <div class="hero-price" id="out-price">—</div>
+        <div class="hero-sub" id="out-sub">cost floor + top-up</div>
+        <div class="hero-sub" id="out-perSession">—</div>
+      </div>
+
+      <div class="foot-note">
+        <strong>Reading this:</strong> the cost floor is what one student's seat actually costs you for the whole workshop — the number you shouldn't price below. Set <em>sessions</em> to 1 for a one-time workshop, or higher for a course.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ids = ['spaceCharge','numSessions','sessionDuration','rate','bisqueHrs','glazeHrs','materials','pieces','topup'];
+  const el = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+  const RATED_KW = 3.6; // Keramikos Economy Favourite SE200, standard home power
+  const DUTY_CYCLE = 0.45; // assumed average element duty cycle
+  const KILN_CAPACITY = 18; // assumed pieces per full kiln load
+
+  function fmt(n){
+    if (!isFinite(n)) return '—';
+    return '€' + n.toLocaleString('en-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function calc(){
+    const numSessions = Math.max(parseFloat(el.numSessions.value) || 1, 1);
+    const sessionDuration = Math.max(parseFloat(el.sessionDuration.value) || 0, 0);
+    const rate = parseFloat(el.rate.value) || 0;
+    const bisqueHrs = parseFloat(el.bisqueHrs.value) || 0;
+    const glazeHrs = parseFloat(el.glazeHrs.value) || 0;
+    const materials = parseFloat(el.materials.value) || 0;
+    const pieces = Math.max(parseFloat(el.pieces.value) || 0, 0);
+    const topupPerHour = parseFloat(el.topup.value) || 0;
+
+    const kWhBisque = RATED_KW * bisqueHrs * DUTY_CYCLE;
+    const kWhGlaze = RATED_KW * glazeHrs * DUTY_CYCLE;
+    const firingCostPerLoad = (kWhBisque + kWhGlaze) * rate;
+    const firingCostPerPiece = firingCostPerLoad / KILN_CAPACITY;
+    const firingPerStudent = firingCostPerPiece * pieces;
+
+    const totalHours = numSessions * sessionDuration;
+    const materialsTotal = materials;
+    const topupTotal = topupPerHour * totalHours;
+    const spaceCharge = parseFloat(el.spaceCharge.value) || 0;
+
+    const costFloor = materialsTotal + firingPerStudent + spaceCharge;
+    const price = costFloor + topupTotal;
+
+    document.getElementById('out-rent').textContent = fmt(spaceCharge);
+    document.getElementById('out-materials').textContent = fmt(materialsTotal);
+    document.getElementById('out-firing').textContent = fmt(firingPerStudent);
+    document.getElementById('out-floor').textContent = fmt(costFloor);
+    document.getElementById('out-price').textContent = fmt(price);
+    document.getElementById('out-sub').textContent = fmt(costFloor) + ' + ' + fmt(topupTotal) + ' top-up';
+    document.getElementById('out-perSession').textContent = '≈ ' + fmt(price / numSessions) + ' / session';
+  }
+
+  ids.forEach(id => el[id].addEventListener('input', calc));
+  calc();
+</script>
+</body>
+</html>
